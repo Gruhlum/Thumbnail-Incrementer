@@ -13,7 +13,7 @@ namespace Thumbnail__
     public class Thumbnail
     {
         public string name;
-        public int lastUsed;
+        public DateTime lastUsed = DateTime.Now;
         public string path;
         public AnchorStyles anchor = AnchorStyles.Left;
         public int increment = 0;
@@ -46,7 +46,7 @@ namespace Thumbnail__
                 fontName = value;
             }
         }
-        string fontName = "Ariel";
+        string fontName = "Arial";
 
         public int FontSize
         {
@@ -90,9 +90,15 @@ namespace Thumbnail__
         public Image image;
         public Image defaultImage;
 
+        public Thumbnail(string pathName)
+        {
+            path = pathName;
+        }
+            
+           
         public void Save()
         {
-            string[] values = new string[10];
+            string[] values = new string[11];
             values[0] = name;
             values[1] = path;
             values[2] = anchor.ToString();
@@ -104,31 +110,25 @@ namespace Thumbnail__
             values[8] = IsBold.ToString();
             values[9] = IsCursive.ToString();
             values[10] = lastUsed.ToString();
-
-            if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"LastThumbnails\"))
-            {
-                Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + @"LastThumbnails\");
-            }
-            File.WriteAllLines(AppDomain.CurrentDomain.BaseDirectory + @"LastThumbnails\" + name + @".txt", values);
+            DataHelper.SaveData(values, name);
         }
+
         public void Load(string fileName)
         {
-            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"LastThumbnails\" + fileName + @".txt"))
-            {
-                string[] values = File.ReadAllLines(AppDomain.CurrentDomain.BaseDirectory + @"LastThumbnails\" + fileName + @".txt");
+            string[] values = DataHelper.LoadData(fileName);
 
-                name = values[0];
-                path = values[1];
-                anchor = ConvertToAnchor(values[2]);
-                increment = Convert.ToInt16(values[3]);
-                xPos = Convert.ToInt16(values[4]);
-                yPos = Convert.ToInt16(values[5]);
-                FontName = values[6];
-                FontSize = Convert.ToInt16(values[7]);
-                IsBold = Convert.ToBoolean(values[8]);
-                IsCursive = Convert.ToBoolean(values[9]);
-                lastUsed = Convert.ToInt16(values[10]);
-            }
+            name = values[0];
+            path = values[1];
+            defaultImage = Image.FromFile(path);
+            anchor = ConvertToAnchor(values[2]);
+            increment = Convert.ToInt16(values[3]);
+            xPos = Convert.ToInt16(values[4]);
+            yPos = Convert.ToInt16(values[5]);
+            FontName = values[6];
+            FontSize = Convert.ToInt16(values[7]);
+            IsBold = Convert.ToBoolean(values[8]);
+            IsCursive = Convert.ToBoolean(values[9]);
+            lastUsed = Convert.ToDateTime(values[10]);
         }
         private AnchorStyles ConvertToAnchor(string name)
         {
@@ -159,24 +159,6 @@ namespace Thumbnail__
             return x;
         }
 
-        public static void LoadThumbnails()
-        {
-            if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"LastThumbnails\"))
-            {
-                return;
-            }
-            string[] filePaths = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"LastThumbnails\");
-
-            foreach (var path in filePaths)
-            {
-                Thumbnail thumbnail = new Thumbnail();
-                thumbnail.Load(GetFileName(path));
-            }
-        }
-        public static string GetFileName(string path)
-        {
-            int lastIndex = path.LastIndexOf('\\') + 1;
-            return path.Substring(lastIndex, (path.Length - lastIndex) - ".txt".Length);
-        }
+        
     }
 }

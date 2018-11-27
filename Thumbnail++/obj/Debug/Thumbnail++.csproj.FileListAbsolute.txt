@@ -7,4 +7,4 @@ C:\Users\Patrick\Documents\visual studio 2017\Projects\Thumbnail++\Thumbnail++\o
 C:\Users\Patrick\Documents\visual studio 2017\Projects\Thumbnail++\Thumbnail++\obj\Debug\Thumbnail++.csproj.CoreCompileInputs.cache
 C:\Users\Patrick\Documents\visual studio 2017\Projects\Thumbnail++\Thumbnail++\obj\Debug\Thumbnail++.exe
 C:\Users\Patrick\Documents\visual studio 2017\Projects\Thumbnail++\Thumbnail++\obj\Debug\Thumbnail++.pdb
-C:\Users\Patrick\Documents\visual studio 2017\Projects\Thumbnail++\Thumbnail++\obj\Debug\Thumbnail__.FormMain.resources
+C:\Users\Patrick\Documents\visual studio 2017\Projects\Thumbnail++\Thumbnail++\obj\Debug\Thumbnail__.MainControl.resources

@@ -12,7 +12,7 @@ using System.Windows.Forms;
 
 namespace Thumbnail__
 {
-    public partial class FormMain : Form
+    public partial class MainControl : Form
     {
         public Thumbnail selectedThumbnail;
 
@@ -51,25 +51,66 @@ namespace Thumbnail__
         //}
         //AnchorStyles pictureAnchor;
 
-        public FormMain()
+        public MainControl()
         {
             InitializeComponent();
+            DataHelper.ImageFolderChanged += OnImageFolder_Changed;
             AddPictureBoxes();
+            LoadFonts();
+            LoadThumbnails();
+            if (savedThumbnails.Count != 0)
+            {
+                DisplaySelectedThumbnail(savedThumbnails.First());
+            }
+        }
+        private void OnImageFolder_Changed()
+        {
+            TBOutputPath.Text = DataHelper.ImageFolder;
+            ToolTip1.SetToolTip(TBOutputPath, TBOutputPath.Text);
+            BtnCreate.Enabled = true;
+        }
 
+        private void LoadThumbnails()
+        {
+            string[] filePaths = DataHelper.GetAllFiles();
+            if (filePaths == null)
+            {
+                return;
+            }
+            foreach (var path in filePaths)
+            {
+                Thumbnail thumbnail = new Thumbnail(path);
+                thumbnail.Load(DataHelper.GetFileName(path));
+                savedThumbnails.Add(thumbnail);
+            }
+            DisplaySavedThumbnails();
+        }
+        private void DisplaySavedThumbnails()
+        {
+            int i = 0;
+            savedThumbnails.Sort((y, x) => x.lastUsed.CompareTo(y.lastUsed));
+            foreach (var box in savedBoxes)
+            {
+                if (savedThumbnails.Count > i)
+                {
+                    box.Image = savedThumbnails[i].defaultImage;
+                    i++;
+                }
+            }
+        }
+        private void LoadFonts()
+        {
             using (InstalledFontCollection fontsCollection = new InstalledFontCollection())
             {
                 FontFamily[] fontFamilies = fontsCollection.Families;
                 foreach (FontFamily font in fontFamilies)
                 {
                     if (font.Name != "")
-                    {
                         CBFonts.Items.Add(font.Name);
-                    }                   
                 }
             }
             CBFonts.SelectedIndex = 0;
         }
-
         private void AddPictureBoxes()
         {
             savedBoxes.Add(PBSaved1);
@@ -78,7 +119,7 @@ namespace Thumbnail__
             savedBoxes.Add(PBSaved4);
         }
         
-        private void DisplayThumbnail(Thumbnail thumbnail)
+        private void DisplaySelectedThumbnail(Thumbnail thumbnail)
         {
             selectedThumbnail = thumbnail;
             NumericUDIncrement.Value = thumbnail.increment;
@@ -126,29 +167,22 @@ namespace Thumbnail__
             {
                 if (savedThumbnails.Any(x => x.name == op.FileName))
                 {
-                    DisplayThumbnail(savedThumbnails.Find(x => x.name == op.FileName));
+                    DisplaySelectedThumbnail(savedThumbnails.Find(x => x.name == op.FileName));
                     return;
                 }
-                Thumbnail thumbnail = new Thumbnail();
-                thumbnail.name = Thumbnail.GetFileName(op.FileName);
+                Thumbnail thumbnail = new Thumbnail(op.FileName);
+                thumbnail.name = DataHelper.GetFileName(op.FileName);
                 thumbnail.defaultImage = Image.FromFile(op.FileName);
-                DisplayThumbnail(thumbnail);
+                DisplaySelectedThumbnail(thumbnail);
                 savedThumbnails.Add(thumbnail);
-                foreach (var box in savedBoxes)
-                {
-                    if (box.Image == null)
-                    {
-                        box.Image = thumbnail.defaultImage;
-                        break;
-                    }
-                }
-
-                // remove saved ones
+                DisplaySavedThumbnails();
             }
         }
 
         private void BtnCreate_Click(object sender, EventArgs e)
         {
+            DataHelper.SaveImage(selectedThumbnail.image, selectedThumbnail.name + selectedThumbnail.increment);
+
             NumericUDIncrement.Value++;
         }      
         private void BtnRight_Click(object sender, EventArgs e)
@@ -229,7 +263,31 @@ namespace Thumbnail__
             {
                 return;
             }
-            DisplayThumbnail(savedThumbnails.Find(x => x.defaultImage == pb.Image));
+            Thumbnail thumbnail = savedThumbnails.Find(x => x.defaultImage == pb.Image);
+            thumbnail.lastUsed = DateTime.Now;
+            DisplaySelectedThumbnail(thumbnail);
+        }
+
+        private void MainControl_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            foreach (var item in savedThumbnails)
+            {
+                item.Save();
+            }
+        }
+
+        private void BtnChangeOutput_Click(object sender, EventArgs e)
+        {
+            using (var fbd = new FolderBrowserDialog())
+            {
+                DialogResult result = fbd.ShowDialog();
+
+                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                {
+                    DataHelper.ImageFolder = fbd.SelectedPath;                   
+                }
+            }
+            
         }
     }
 

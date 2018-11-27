@@ -1,6 +1,6 @@
 ﻿namespace Thumbnail__
 {
-    partial class FormMain
+    partial class MainControl
     {
         /// <summary>
         /// Required designer variable.
@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.BtnSelect = new System.Windows.Forms.Button();
             this.BtnCreate = new System.Windows.Forms.Button();
             this.PBSelect = new System.Windows.Forms.PictureBox();
@@ -50,6 +51,9 @@
             this.PBSaved1 = new System.Windows.Forms.PictureBox();
             this.PanelPictureBoxes = new System.Windows.Forms.Panel();
             this.LabelName = new System.Windows.Forms.Label();
+            this.TBOutputPath = new System.Windows.Forms.TextBox();
+            this.BtnChangeOutput = new System.Windows.Forms.Button();
+            this.ToolTip1 = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.PBSelect)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.NumericUDIncrement)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.NumericUDFontSize)).BeginInit();
@@ -74,11 +78,12 @@
             // 
             // BtnCreate
             // 
-            this.BtnCreate.Location = new System.Drawing.Point(16, 350);
+            this.BtnCreate.Enabled = false;
+            this.BtnCreate.Location = new System.Drawing.Point(21, 354);
             this.BtnCreate.Name = "BtnCreate";
-            this.BtnCreate.Size = new System.Drawing.Size(75, 23);
+            this.BtnCreate.Size = new System.Drawing.Size(75, 22);
             this.BtnCreate.TabIndex = 2;
-            this.BtnCreate.Text = "Create";
+            this.BtnCreate.Text = "Save";
             this.BtnCreate.UseVisualStyleBackColor = true;
             this.BtnCreate.Click += new System.EventHandler(this.BtnCreate_Click);
             // 
@@ -93,7 +98,7 @@
             // 
             // NumericUDIncrement
             // 
-            this.NumericUDIncrement.Location = new System.Drawing.Point(194, 353);
+            this.NumericUDIncrement.Location = new System.Drawing.Point(448, 358);
             this.NumericUDIncrement.Maximum = new decimal(new int[] {
             -727379969,
             232,
@@ -225,7 +230,7 @@
             // LabelNumber
             // 
             this.LabelNumber.AutoSize = true;
-            this.LabelNumber.Location = new System.Drawing.Point(144, 355);
+            this.LabelNumber.Location = new System.Drawing.Point(398, 360);
             this.LabelNumber.Name = "LabelNumber";
             this.LabelNumber.Size = new System.Drawing.Size(44, 13);
             this.LabelNumber.TabIndex = 19;
@@ -326,11 +331,33 @@
             this.LabelName.Size = new System.Drawing.Size(0, 13);
             this.LabelName.TabIndex = 33;
             // 
-            // FormMain
+            // TBOutputPath
+            // 
+            this.TBOutputPath.Enabled = false;
+            this.TBOutputPath.Location = new System.Drawing.Point(97, 355);
+            this.TBOutputPath.Name = "TBOutputPath";
+            this.TBOutputPath.ReadOnly = true;
+            this.TBOutputPath.Size = new System.Drawing.Size(236, 20);
+            this.TBOutputPath.TabIndex = 34;
+            this.TBOutputPath.Text = "Select Folder";
+            // 
+            // BtnChangeOutput
+            // 
+            this.BtnChangeOutput.Location = new System.Drawing.Point(333, 354);
+            this.BtnChangeOutput.Name = "BtnChangeOutput";
+            this.BtnChangeOutput.Size = new System.Drawing.Size(27, 22);
+            this.BtnChangeOutput.TabIndex = 35;
+            this.BtnChangeOutput.Text = "...";
+            this.BtnChangeOutput.UseVisualStyleBackColor = true;
+            this.BtnChangeOutput.Click += new System.EventHandler(this.BtnChangeOutput_Click);
+            // 
+            // MainControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(564, 387);
+            this.Controls.Add(this.BtnChangeOutput);
+            this.Controls.Add(this.TBOutputPath);
             this.Controls.Add(this.LabelName);
             this.Controls.Add(this.PanelPictureBoxes);
             this.Controls.Add(this.CBFonts);
@@ -349,9 +376,10 @@
             this.Controls.Add(this.PBSelect);
             this.Controls.Add(this.BtnCreate);
             this.Controls.Add(this.BtnSelect);
-            this.Name = "FormMain";
+            this.Name = "MainControl";
             this.ShowIcon = false;
             this.Text = "Thumbnail++";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainControl_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.PBSelect)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.NumericUDIncrement)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.NumericUDFontSize)).EndInit();
@@ -391,6 +419,9 @@
         private System.Windows.Forms.PictureBox PBSaved1;
         private System.Windows.Forms.Panel PanelPictureBoxes;
         private System.Windows.Forms.Label LabelName;
+        private System.Windows.Forms.TextBox TBOutputPath;
+        private System.Windows.Forms.Button BtnChangeOutput;
+        private System.Windows.Forms.ToolTip ToolTip1;
     }
 }
 
