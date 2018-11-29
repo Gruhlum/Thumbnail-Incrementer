@@ -12,11 +12,13 @@ namespace Thumbnail__
 {
     public class Thumbnail
     {
+        public const float ALIGN_MULTI = 0.72777f;
+
         public string name;
         public DateTime lastUsed = DateTime.Now;
         public string path;
         public AnchorStyles anchor = AnchorStyles.Left;
-        public int increment = 0;
+        public int increment = 1;
         public int xPos = 0;
         public int yPos = 0;
 
@@ -24,7 +26,7 @@ namespace Thumbnail__
         {
             get
             {
-                return new PointF(GetXPosition(), yPos);
+                return new PointF(GetXPosition(), defaultImage.Height - GetYPosition());
             }
         }
         public Font Font
@@ -59,7 +61,7 @@ namespace Thumbnail__
                 fontSize = value;
             }
         }
-        int fontSize = 400;
+        int fontSize = 300;
 
         public bool IsBold
         {
@@ -87,32 +89,79 @@ namespace Thumbnail__
         }
         bool isCursive;
 
+        public int BorderSize
+        {
+            get
+            {
+                return borderSize;
+            }
+            set
+            {
+                borderSize = value;
+            }
+        }
+        int borderSize;
+
+        public Color BorderColor
+        {
+            get
+            {
+                return borderColor;
+            }
+            set
+            {
+                borderColor = value;
+            }
+        }
+        Color borderColor = Color.Black;
+
+        public Color FontColor
+        {
+            get
+            {
+                return fontColor;
+            }
+            set
+            {
+                fontColor = value;
+            }
+        }
+        Color fontColor = Color.White;
+
         public Image image;
         public Image defaultImage;
 
         public Thumbnail(string pathName)
-        {
-            path = pathName;
+        {          
+            if (pathName != null)
+            {
+                path = pathName;
+                defaultImage = Image.FromFile(pathName);
+                yPos = defaultImage.Height;
+                lastUsed = DateTime.Now;
+            }                      
         }
-            
-           
+                       
         public void Save()
         {
-            string[] values = new string[11];
+            string[] values = new string[17];
             values[0] = name;
             values[1] = path;
             values[2] = anchor.ToString();
             values[3] = increment.ToString();
             values[4] = xPos.ToString();
             values[5] = yPos.ToString();
-            values[6] = FontName;
-            values[7] = FontSize.ToString();
-            values[8] = IsBold.ToString();
-            values[9] = IsCursive.ToString();
-            values[10] = lastUsed.ToString();
+            values[6] = lastUsed.ToString();
+            values[7] = FontName;
+            values[8] = FontSize.ToString();
+            values[9] = IsBold.ToString();
+            values[10] = IsCursive.ToString();
+            values[11] = FontColor.ToArgb().ToString();
+            values[12] = BorderSize.ToString();
+            values[13] = BorderColor.ToArgb().ToString();
+
             DataHelper.SaveData(values, name);
         }
-
         public void Load(string fileName)
         {
             string[] values = DataHelper.LoadData(fileName);
@@ -121,15 +170,19 @@ namespace Thumbnail__
             path = values[1];
             defaultImage = Image.FromFile(path);
             anchor = ConvertToAnchor(values[2]);
-            increment = Convert.ToInt16(values[3]);
+            increment = Convert.ToInt32(values[3]);
             xPos = Convert.ToInt16(values[4]);
             yPos = Convert.ToInt16(values[5]);
-            FontName = values[6];
-            FontSize = Convert.ToInt16(values[7]);
-            IsBold = Convert.ToBoolean(values[8]);
-            IsCursive = Convert.ToBoolean(values[9]);
-            lastUsed = Convert.ToDateTime(values[10]);
+            lastUsed = Convert.ToDateTime(values[6]);
+            FontName = values[7];
+            FontSize = Convert.ToInt16(values[8]);
+            IsBold = Convert.ToBoolean(values[9]);
+            IsCursive = Convert.ToBoolean(values[10]);
+            FontColor = Color.FromArgb(Convert.ToInt32(values[11]));
+            BorderSize = Convert.ToInt16(values[12]);
+            BorderColor = Color.FromArgb(Convert.ToInt32(values[13]));
         }
+
         private AnchorStyles ConvertToAnchor(string name)
         {
             if (name == AnchorStyles.Left.ToString())
@@ -141,24 +194,28 @@ namespace Thumbnail__
 
         private float GetXPosition()
         {
-            float x = 0;
-
-            Graphics g = Graphics.FromImage(new Bitmap(1, 1));
-            SizeF size = g.MeasureString(increment.ToString(), Font);
-
-            if (anchor == AnchorStyles.Right)
+            using (Graphics g = Graphics.FromImage(new Bitmap(1, 1)))
             {
-                x = xPos - size.Width;
-            }
-            else if (anchor == AnchorStyles.None)
-            {
-                x = xPos - size.Width / 2;
-            }
-            else x = xPos;
+                SizeF size = g.MeasureString(increment.ToString(), Font);
 
-            return x;
+                if (anchor == AnchorStyles.Right)
+                {
+                    return xPos - size.Width * ALIGN_MULTI;
+                }
+                else if (anchor == AnchorStyles.None)
+                {
+                    return xPos - size.Width / 2 * ALIGN_MULTI;
+                }
+                return xPos;
+            }                     
         }
-
-        
+        private float GetYPosition()
+        {
+            using (Graphics g = Graphics.FromImage(new Bitmap(1, 1)))
+            {
+                SizeF size = g.MeasureString(increment.ToString(), Font);
+                return yPos - size.Height * 0.00f;
+            }           
+        }
     }
 }

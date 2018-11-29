@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Linq;
 using System.Text;
@@ -15,47 +16,17 @@ namespace Thumbnail__
     public partial class MainControl : Form
     {
         public Thumbnail selectedThumbnail;
-
         public List<Thumbnail> savedThumbnails = new List<Thumbnail>();
-
         private List<PictureBox> savedBoxes = new List<PictureBox>();
 
-        //public AnchorStyles PictureAnchor
-        //{
-        //    get
-        //    {
-        //        return pictureAnchor;
-        //    }
-        //    set
-        //    {
-        //        pictureAnchor = value;
-        //        if (pictureAnchor == AnchorStyles.Left)
-        //        {
-        //            BtnLeft.Enabled = false;
-        //            BtnCenter.Enabled = true;
-        //            BtnRight.Enabled = true;
-        //        }
-        //        if (pictureAnchor == AnchorStyles.None)
-        //        {
-        //            BtnLeft.Enabled = true;
-        //            BtnCenter.Enabled = false;
-        //            BtnRight.Enabled = true;
-        //        }
-        //        if (pictureAnchor == AnchorStyles.Right)
-        //        {
-        //            BtnLeft.Enabled = true;
-        //            BtnCenter.Enabled = true;
-        //            BtnRight.Enabled = false;
-        //        }
-        //    }
-        //}
-        //AnchorStyles pictureAnchor;
+        private bool allowBuild = true;
 
         public MainControl()
         {
             InitializeComponent();
             DataHelper.ImageFolderChanged += OnImageFolder_Changed;
             AddPictureBoxes();
+            LoadConfig();
             LoadFonts();
             LoadThumbnails();
             if (savedThumbnails.Count != 0)
@@ -63,13 +34,22 @@ namespace Thumbnail__
                 DisplaySelectedThumbnail(savedThumbnails.First());
             }
         }
-        private void OnImageFolder_Changed()
-        {
-            TBOutputPath.Text = DataHelper.ImageFolder;
-            ToolTip1.SetToolTip(TBOutputPath, TBOutputPath.Text);
-            BtnCreate.Enabled = true;
-        }
 
+        private void AddPictureBoxes()
+        {
+            savedBoxes.Add(PBSaved1);
+            savedBoxes.Add(PBSaved2);
+            savedBoxes.Add(PBSaved3);
+            savedBoxes.Add(PBSaved4);
+        }
+        private void LoadConfig()
+        {
+            string[] values = DataHelper.LoadData("Config");
+            if (values != null && values.Count() != 0)
+            {
+                DataHelper.ImageFolder = values[0];
+            }           
+        }
         private void LoadThumbnails()
         {
             string[] filePaths = DataHelper.GetAllFiles();
@@ -79,24 +59,15 @@ namespace Thumbnail__
             }
             foreach (var path in filePaths)
             {
-                Thumbnail thumbnail = new Thumbnail(path);
-                thumbnail.Load(DataHelper.GetFileName(path));
-                savedThumbnails.Add(thumbnail);
-            }
-            DisplaySavedThumbnails();
-        }
-        private void DisplaySavedThumbnails()
-        {
-            int i = 0;
-            savedThumbnails.Sort((y, x) => x.lastUsed.CompareTo(y.lastUsed));
-            foreach (var box in savedBoxes)
-            {
-                if (savedThumbnails.Count > i)
+                string fileName = DataHelper.GetFileName(path);
+                if (fileName != "Config")
                 {
-                    box.Image = savedThumbnails[i].defaultImage;
-                    i++;
+                    Thumbnail thumbnail = new Thumbnail(null);
+                    thumbnail.Load(fileName);
+                    savedThumbnails.Add(thumbnail);
                 }
             }
+            DisplaySavedThumbnails();
         }
         private void LoadFonts()
         {
@@ -111,35 +82,10 @@ namespace Thumbnail__
             }
             CBFonts.SelectedIndex = 0;
         }
-        private void AddPictureBoxes()
-        {
-            savedBoxes.Add(PBSaved1);
-            savedBoxes.Add(PBSaved2);
-            savedBoxes.Add(PBSaved3);
-            savedBoxes.Add(PBSaved4);
-        }
-        
-        private void DisplaySelectedThumbnail(Thumbnail thumbnail)
-        {
-            selectedThumbnail = thumbnail;
-            NumericUDIncrement.Value = thumbnail.increment;
-            NumericUDFontSize.Value = thumbnail.FontSize;
-            NumericUDPositionX.Value = thumbnail.xPos;
-            NumericUDPositionY.Value = thumbnail.yPos;
-            CBFonts.Text = thumbnail.FontName;
-            LabelName.Text = thumbnail.name;
-            PBSelect.Image = BuildImage(thumbnail);
-        }
-        private SizeF GetTextSize(string text, Font font)
-        {
-            using (Graphics g = Graphics.FromImage(new Bitmap(1, 1)))
-            {
-                return g.MeasureString(text, font);
-            }                      
-        }
+
         private Image BuildImage(Thumbnail thumb)
         {
-            if (thumb.defaultImage == null)
+            if (thumb == null || thumb.defaultImage == null || allowBuild == false)
             {
                 return null;
             }
@@ -147,82 +93,195 @@ namespace Thumbnail__
             {
                 thumb.image.Dispose();
             }
-            
+
             thumb.image = thumb.defaultImage.Clone() as Image;
-            Graphics g = Graphics.FromImage(thumb.image);            
-            g.DrawString(thumb.increment.ToString(), thumb.Font, Brushes.White, thumb.Position);
+            Graphics g = Graphics.FromImage(thumb.image);
+            g.TextRenderingHint = TextRenderingHint.AntiAlias;
+            GraphicsPath outlinePath = new GraphicsPath();
+            outlinePath.AddString(thumb.increment.ToString(), 
+                selectedThumbnail.Font.FontFamily, 0, thumb.FontSize, thumb.Position, StringFormat.GenericTypographic);
+
+            g.FillPath(new SolidBrush(selectedThumbnail.FontColor), outlinePath);
+            if (thumb.BorderSize > 0)
+            {
+                g.DrawPath(new Pen(thumb.BorderColor, thumb.BorderSize), outlinePath);
+            }
+            
+            outlinePath.Dispose();
             g.Dispose();
             return thumb.image;
+        }
+        private void DisplaySavedThumbnails()
+        {
+            int i = 0;
+            savedThumbnails.Sort((y, x) => x.lastUsed.CompareTo(y.lastUsed));
+            foreach (var box in savedBoxes)
+            {
+                if (savedThumbnails.Count > i)
+                {
+                    box.Image = savedThumbnails[i].defaultImage;
+                    i++;
+                }
+            }
+        }                       
+        private void DisplaySelectedThumbnail(Thumbnail thumbnail)
+        {
+            allowBuild = false;
+            selectedThumbnail = thumbnail;
+            NumericUDIncrement.Value = thumbnail.increment;
+            NumericUDFontSize.Value = thumbnail.FontSize;
+            NumericUDBorderSize.Value = thumbnail.BorderSize;
+            NumericUDPositionX.Value = thumbnail.xPos;
+            NumericUDPositionY.Value = thumbnail.yPos;
+            CBFonts.Text = thumbnail.FontName;
+            LabelName.Text = thumbnail.name;
+            PBSelect.Image = BuildImage(thumbnail);
+            BtnFontColor.BackColor = thumbnail.FontColor;
+            BtnBorderColor.BackColor = thumbnail.BorderColor;
+            allowBuild = true;
+            PBSelect.Image = BuildImage(selectedThumbnail);
+        }
+
+        private SizeF GetTextSize(string text, Font font)
+        {
+            using (Graphics g = Graphics.FromImage(new Bitmap(1, 1)))
+            {
+                return g.MeasureString(text, font);
+            }                      
+        }
+
+        private void OnImageFolder_Changed()
+        {
+            TBOutputPath.Text = DataHelper.ImageFolder;
+            ToolTip1.SetToolTip(TBOutputPath, TBOutputPath.Text);
+            BtnCreate.Enabled = true;
+        }
+        private void MainControl_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            foreach (var item in savedThumbnails)
+            {
+                item.Save();
+            }
+            string[] config = new string[1];
+            config[0] = DataHelper.ImageFolder;
+            DataHelper.SaveData(config, "Config");
         }
 
         private void BtnSelect_Click(object sender, EventArgs e)
         {
-            OpenFileDialog op = new OpenFileDialog();
-            op.Title = "Select a picture";
-            op.Filter = "All supported graphics|*.jpg;*.jpeg;*.png|" +
+            OpenFileDialog op = new OpenFileDialog
+            {
+                Title = "Select a picture",
+                Filter = "All supported graphics|*.jpg;*.jpeg;*.png|" +
               "JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg|" +
-              "Portable Network Graphic (*.png)|*.png";
+              "Portable Network Graphic (*.png)|*.png"
+            };
             DialogResult d = op.ShowDialog();
             if (d == DialogResult.OK)
             {
-                if (savedThumbnails.Any(x => x.name == op.FileName))
+                if (savedThumbnails.Any(x => x.path == op.FileName))
                 {
-                    DisplaySelectedThumbnail(savedThumbnails.Find(x => x.name == op.FileName));
+                    Thumbnail tempThumbnail = savedThumbnails.Find(x => x.path == op.FileName);
+                    tempThumbnail.lastUsed = DateTime.Now;
+                    DisplaySelectedThumbnail(tempThumbnail);
+                    DisplaySavedThumbnails();
                     return;
                 }
                 Thumbnail thumbnail = new Thumbnail(op.FileName);
-                thumbnail.name = DataHelper.GetFileName(op.FileName);
-                thumbnail.defaultImage = Image.FromFile(op.FileName);
+                thumbnail.name = DataHelper.GetFileName(op.FileName);               
                 DisplaySelectedThumbnail(thumbnail);
                 savedThumbnails.Add(thumbnail);
                 DisplaySavedThumbnails();
             }
         }
 
-        private void BtnCreate_Click(object sender, EventArgs e)
-        {
-            DataHelper.SaveImage(selectedThumbnail.image, selectedThumbnail.name + selectedThumbnail.increment);
-
-            NumericUDIncrement.Value++;
-        }      
-        private void BtnRight_Click(object sender, EventArgs e)
-        {            
-            if (selectedThumbnail.anchor == AnchorStyles.Left)
-            {
-                NumericUDPositionX.Value += (decimal)GetTextSize(NumericUDIncrement.Value.ToString(), selectedThumbnail.Font).Width;
-            }
-            else if (selectedThumbnail.anchor == AnchorStyles.None)
-            {
-                NumericUDPositionX.Value += (decimal)(GetTextSize(NumericUDIncrement.Value.ToString(), selectedThumbnail.Font).Width / 2);
-            }
-            selectedThumbnail.anchor = AnchorStyles.Right;
-            PBSelect.Image = BuildImage(selectedThumbnail);
-        }
         private void BtnLeft_Click(object sender, EventArgs e)
         {
             if (selectedThumbnail.anchor == AnchorStyles.Right)
             {
-                NumericUDPositionX.Value -= (decimal)GetTextSize(NumericUDIncrement.Value.ToString(), selectedThumbnail.Font).Width;
+                NumericUDPositionX.Value -= (decimal)(GetTextSize(NumericUDIncrement.Value.ToString(), selectedThumbnail.Font).Width * Thumbnail.ALIGN_MULTI);
             }
             else if (selectedThumbnail.anchor == AnchorStyles.None)
             {
-                NumericUDPositionX.Value -= (decimal)(GetTextSize(NumericUDIncrement.Value.ToString(), selectedThumbnail.Font).Width / 2);
+                NumericUDPositionX.Value -= (decimal)(GetTextSize(NumericUDIncrement.Value.ToString(), selectedThumbnail.Font).Width / 2 * Thumbnail.ALIGN_MULTI);
             }
             selectedThumbnail.anchor = AnchorStyles.Left;
-            PBSelect.Image = BuildImage(selectedThumbnail);
         }     
         private void BtnCenter_Click(object sender, EventArgs e)
         {
             if (selectedThumbnail.anchor == AnchorStyles.Right)
             {
-                NumericUDPositionX.Value -= (decimal)(GetTextSize(NumericUDIncrement.Value.ToString(), selectedThumbnail.Font).Width / 2);
+                NumericUDPositionX.Value -= (decimal)(GetTextSize(NumericUDIncrement.Value.ToString(), selectedThumbnail.Font).Width / 2 * Thumbnail.ALIGN_MULTI);
             }
             else if (selectedThumbnail.anchor == AnchorStyles.Left)
             {
-                NumericUDPositionX.Value += (decimal)(GetTextSize(NumericUDIncrement.Value.ToString(), selectedThumbnail.Font).Width / 2);
+                NumericUDPositionX.Value += (decimal)(GetTextSize(NumericUDIncrement.Value.ToString(), selectedThumbnail.Font).Width / 2 * Thumbnail.ALIGN_MULTI);
             }
             selectedThumbnail.anchor = AnchorStyles.None;
             PBSelect.Image = BuildImage(selectedThumbnail);
+        }
+        private void BtnRight_Click(object sender, EventArgs e)
+        {            
+            if (selectedThumbnail.anchor == AnchorStyles.Left)
+            {
+                NumericUDPositionX.Value += (decimal)(GetTextSize(NumericUDIncrement.Value.ToString(), selectedThumbnail.Font).Width * Thumbnail.ALIGN_MULTI);
+            }
+            else if (selectedThumbnail.anchor == AnchorStyles.None)
+            {
+                NumericUDPositionX.Value += (decimal)(GetTextSize(NumericUDIncrement.Value.ToString(), selectedThumbnail.Font).Width / 2 * Thumbnail.ALIGN_MULTI);
+            }
+            selectedThumbnail.anchor = AnchorStyles.Right;
+            PBSelect.Image = BuildImage(selectedThumbnail);
+        }
+
+        private void BtnSave_Click(object sender, EventArgs e)
+        {           
+            DataHelper.SaveImage(selectedThumbnail.image, selectedThumbnail.name + selectedThumbnail.increment);
+            NumericUDIncrement.Value++;
+        }      
+        private void BtnChangeOutput_Click(object sender, EventArgs e)
+        {
+            using (var fbd = new FolderBrowserDialog())
+            {
+                DialogResult result = fbd.ShowDialog();
+
+                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                {
+                    DataHelper.ImageFolder = fbd.SelectedPath;
+                }
+            }
+        }
+        private void BtnFontColor_Click(object sender, EventArgs e)
+        {
+            DialogResult d = colorDialog1.ShowDialog();
+            if (d == DialogResult.OK)
+            {
+                BtnFontColor.BackColor = colorDialog1.Color;
+                selectedThumbnail.FontColor = colorDialog1.Color;
+                PBSelect.Image = BuildImage(selectedThumbnail);
+            }
+        }
+        private void BtnBorderColor_Click(object sender, EventArgs e)
+        {
+            DialogResult d = colorDialog1.ShowDialog();
+            if (d == DialogResult.OK)
+            {
+                BtnBorderColor.BackColor = colorDialog1.Color;
+                selectedThumbnail.BorderColor = colorDialog1.Color;
+                PBSelect.Image = BuildImage(selectedThumbnail);
+            }
+        }
+
+        private void PBSavedThumbnails_Click(object sender, EventArgs e)
+        {
+            PictureBox pb = sender as PictureBox;
+            if (pb.Image == null)
+            {
+                return;
+            }
+            Thumbnail thumbnail = savedThumbnails.Find(x => x.defaultImage == pb.Image);
+            thumbnail.lastUsed = DateTime.Now;
+            DisplaySelectedThumbnail(thumbnail);
         }
 
         private void NumericUDFontSize_ValueChanged(object sender, EventArgs e)
@@ -245,6 +304,11 @@ namespace Thumbnail__
             selectedThumbnail.yPos = (int)NumericUDPositionY.Value;
             PBSelect.Image = BuildImage(selectedThumbnail);
         }
+        private void NumericUDBorderSize_ValueChanged(object sender, EventArgs e)
+        {
+            selectedThumbnail.BorderSize = (int)NumericUDBorderSize.Value;
+            PBSelect.Image = BuildImage(selectedThumbnail);
+        }
 
         private void CBFonts_SelectedValueChanged(object sender, EventArgs e)
         {
@@ -254,51 +318,6 @@ namespace Thumbnail__
             }
             selectedThumbnail.FontName = CBFonts.Text;
             PBSelect.Image = BuildImage(selectedThumbnail);
-        }
-
-        private void PBSaved_Click(object sender, EventArgs e)
-        {
-            PictureBox pb = sender as PictureBox;
-            if (pb.Image == null)
-            {
-                return;
-            }
-            Thumbnail thumbnail = savedThumbnails.Find(x => x.defaultImage == pb.Image);
-            thumbnail.lastUsed = DateTime.Now;
-            DisplaySelectedThumbnail(thumbnail);
-        }
-
-        private void MainControl_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            foreach (var item in savedThumbnails)
-            {
-                item.Save();
-            }
-        }
-
-        private void BtnChangeOutput_Click(object sender, EventArgs e)
-        {
-            using (var fbd = new FolderBrowserDialog())
-            {
-                DialogResult result = fbd.ShowDialog();
-
-                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
-                {
-                    DataHelper.ImageFolder = fbd.SelectedPath;                   
-                }
-            }
-            
-        }
+        }            
     }
-
-    /*
-     * TO DO
-     * - Font Selection
-     * - Save/Load
-     * -- Images
-     * -- Font(size, color, position)
-     * -- Increment
-     * - Auto Update when changing property
-     * - Save created thumbnail
-    */
 }

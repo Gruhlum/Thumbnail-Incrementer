@@ -12,7 +12,7 @@ namespace Thumbnail__
 {
     public class DataHelper
     {
-        static readonly string mainFolder = @"Savedthumbnails\";
+        const string mainFolder = @"Saved\";
         static public string ImageFolder
         {
             get
@@ -32,11 +32,11 @@ namespace Thumbnail__
 
         static public Action ImageFolderChanged;        
 
-        public static string[] GetAllFiles()
+        public static string[] GetAllFiles(string folder = mainFolder)
         {
-            if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + mainFolder))
+            if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + folder))
             {
-                Debug.WriteLine(AppDomain.CurrentDomain.BaseDirectory + mainFolder + " is empty");
+                Debug.WriteLine(AppDomain.CurrentDomain.BaseDirectory + folder + " is empty");
                 return null;
             }
             return Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + mainFolder);
@@ -48,22 +48,22 @@ namespace Thumbnail__
             {
                 Directory.CreateDirectory(ImageFolder);
             }
-            image.Save(ImageFolder + name + ".png");
+            image.Save(ImageFolder + @"\" + name + ".png");
         }
 
-        public static void SaveData(string[] values, string name)
+        public static void SaveData(string[] values, string name, string folder = mainFolder)
         {           
-            if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + mainFolder))
+            if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + folder))
             {
-                Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + mainFolder);
+                Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + folder);
             }
-            File.WriteAllLines(AppDomain.CurrentDomain.BaseDirectory + mainFolder + name + @".txt", values);
+            File.WriteAllLines(AppDomain.CurrentDomain.BaseDirectory + folder + name + @".txt", values);
         }
-        public static string[] LoadData(string fileName)
+        public static string[] LoadData(string fileName, string folder = mainFolder)
         {
-            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + mainFolder + fileName + @".txt"))
+            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + folder + fileName + @".txt"))
             {
-                return File.ReadAllLines(AppDomain.CurrentDomain.BaseDirectory + mainFolder + fileName + @".txt");
+                return File.ReadAllLines(AppDomain.CurrentDomain.BaseDirectory + folder + fileName + @".txt");
             }
             else return null;
         }
