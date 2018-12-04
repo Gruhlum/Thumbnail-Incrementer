@@ -73,5 +73,13 @@ namespace Thumbnail__
             int lastIndex = path.LastIndexOf('\\') + 1;
             return path.Substring(lastIndex, (path.Length - lastIndex) - ".txt".Length);
         }
+        public static void DeleteFile(string fileName, string folder = mainFolder)
+        {
+            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + folder + fileName + @".txt"))
+            {
+                File.Delete(AppDomain.CurrentDomain.BaseDirectory + folder + fileName + @".txt");
+            }
+            else Debug.WriteLine(AppDomain.CurrentDomain.BaseDirectory + folder + fileName + " .. ");
+        }
     }
 }

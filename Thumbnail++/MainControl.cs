@@ -182,9 +182,9 @@ namespace Thumbnail__
             DialogResult d = op.ShowDialog();
             if (d == DialogResult.OK)
             {
-                if (savedThumbnails.Any(x => x.path == op.FileName))
+                if (savedThumbnails.Any(x => x.imagePath == op.FileName))
                 {
-                    Thumbnail tempThumbnail = savedThumbnails.Find(x => x.path == op.FileName);
+                    Thumbnail tempThumbnail = savedThumbnails.Find(x => x.imagePath == op.FileName);
                     tempThumbnail.lastUsed = DateTime.Now;
                     DisplaySelectedThumbnail(tempThumbnail);
                     DisplaySavedThumbnails();
@@ -327,6 +327,27 @@ namespace Thumbnail__
             }
             selectedThumbnail.FontName = CBFonts.Text;
             PBSelect.Image = BuildImage(selectedThumbnail);
+        }
+
+        private void LabelName_DoubleClick(object sender, EventArgs e)
+        {
+            OpenFileDialog op = new OpenFileDialog
+            {
+                Title = "Select a picture",
+                Filter = "All supported graphics|*.jpg;*.jpeg;*.png|" +
+              "JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg|" +
+              "Portable Network Graphic (*.png)|*.png"
+            };
+            DialogResult d = op.ShowDialog();
+            if (d == DialogResult.OK)
+            {
+                DataHelper.DeleteFile(selectedThumbnail.name);
+                selectedThumbnail.name = DataHelper.GetFileName(op.FileName);
+                selectedThumbnail.imagePath = op.FileName;
+                selectedThumbnail.defaultImage = Image.FromFile(op.FileName);
+                DisplaySelectedThumbnail(selectedThumbnail);
+                DisplaySavedThumbnails();
+            }
         }
     }
 }

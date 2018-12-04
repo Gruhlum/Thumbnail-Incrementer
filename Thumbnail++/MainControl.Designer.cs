@@ -266,11 +266,12 @@
             // LabelName
             // 
             this.LabelName.AutoSize = true;
-            this.LabelName.Location = new System.Drawing.Point(166, 332);
+            this.LabelName.Location = new System.Drawing.Point(170, 334);
             this.LabelName.Name = "LabelName";
             this.LabelName.Size = new System.Drawing.Size(89, 13);
             this.LabelName.TabIndex = 33;
             this.LabelName.Text = "Nothing Selected";
+            this.LabelName.DoubleClick += new System.EventHandler(this.LabelName_DoubleClick);
             // 
             // TBOutputPath
             // 

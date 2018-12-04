@@ -13,11 +13,11 @@ namespace Thumbnail__
     public class Thumbnail
     {
         //TODO find better solution
-        public const float ALIGN_MULTI = 0.72777f;
+        public const float ALIGN_MULTI = 0.72757f;
 
         public string name;
         public DateTime lastUsed = DateTime.Now;
-        public string path;
+        public string imagePath;
         public AnchorStyles anchor = AnchorStyles.Left;
         public int increment = 1;
         public int xPos = 0;
@@ -136,7 +136,7 @@ namespace Thumbnail__
         {          
             if (pathName != null)
             {
-                path = pathName;
+                imagePath = pathName;
                 defaultImage = Image.FromFile(pathName);
                 yPos = defaultImage.Height;
                 lastUsed = DateTime.Now;
@@ -147,7 +147,7 @@ namespace Thumbnail__
         {
             string[] values = new string[17];
             values[0] = name;
-            values[1] = path;
+            values[1] = imagePath;
             values[2] = anchor.ToString();
             values[3] = increment.ToString();
             values[4] = xPos.ToString();
@@ -168,8 +168,12 @@ namespace Thumbnail__
             string[] values = DataHelper.LoadData(fileName);
 
             name = values[0];
-            path = values[1];
-            defaultImage = Image.FromFile(path);
+            imagePath = values[1];
+            if (File.Exists(imagePath))
+            {
+                defaultImage = Image.FromFile(imagePath);
+            }
+            else defaultImage = Properties.Resources.MissingFile;
             anchor = ConvertToAnchor(values[2]);
             increment = Convert.ToInt32(values[3]);
             xPos = Convert.ToInt16(values[4]);
