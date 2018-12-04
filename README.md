@@ -8,4 +8,4 @@ A windows forms program to easily create incrementing thumbnails.
 - Remembers the original thumbnail and the last used number between uses
 - Works with multiple thumbnails and presets
 
-[![Example](./Example++.PNG)]
+![Example](./Example++.PNG)
