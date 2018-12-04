@@ -12,6 +12,7 @@ namespace Thumbnail__
 {
     public class Thumbnail
     {
+        //TODO find better solution
         public const float ALIGN_MULTI = 0.72777f;
 
         public string name;
@@ -214,7 +215,7 @@ namespace Thumbnail__
             using (Graphics g = Graphics.FromImage(new Bitmap(1, 1)))
             {
                 SizeF size = g.MeasureString(increment.ToString(), Font);
-                return yPos - size.Height * 0.00f;
+                return yPos;
             }           
         }
     }

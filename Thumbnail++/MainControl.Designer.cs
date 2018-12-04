@@ -57,14 +57,16 @@
             this.GBPosition = new System.Windows.Forms.GroupBox();
             this.GBAlignment = new System.Windows.Forms.GroupBox();
             this.GBFont = new System.Windows.Forms.GroupBox();
-            this.NumericUDFontSize = new System.Windows.Forms.NumericUpDown();
-            this.LabelFontSize = new System.Windows.Forms.Label();
-            this.LabelFontColor = new System.Windows.Forms.Label();
-            this.BtnFontColor = new System.Windows.Forms.Button();
             this.CBFonts = new System.Windows.Forms.ComboBox();
+            this.BtnFontColor = new System.Windows.Forms.Button();
+            this.LabelFontColor = new System.Windows.Forms.Label();
+            this.LabelFontSize = new System.Windows.Forms.Label();
+            this.NumericUDFontSize = new System.Windows.Forms.NumericUpDown();
             this.NumericUDIncrement = new System.Windows.Forms.NumericUpDown();
             this.LabelNumber = new System.Windows.Forms.Label();
             this.GBLastThumbnails = new System.Windows.Forms.GroupBox();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.TBEnding = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.PBSelect)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.NumericUDPositionX)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.NumericUDPositionY)).BeginInit();
@@ -107,15 +109,16 @@
             // PBSelect
             // 
             this.PBSelect.Location = new System.Drawing.Point(169, 113);
+            this.PBSelect.MaximumSize = new System.Drawing.Size(384, 216);
             this.PBSelect.Name = "PBSelect";
             this.PBSelect.Size = new System.Drawing.Size(384, 216);
-            this.PBSelect.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.PBSelect.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.PBSelect.TabIndex = 3;
             this.PBSelect.TabStop = false;
             // 
             // BtnLeft
             // 
-            this.BtnLeft.Location = new System.Drawing.Point(4, 17);
+            this.BtnLeft.Location = new System.Drawing.Point(6, 17);
             this.BtnLeft.Name = "BtnLeft";
             this.BtnLeft.Size = new System.Drawing.Size(46, 23);
             this.BtnLeft.TabIndex = 13;
@@ -125,7 +128,7 @@
             // 
             // BtnRight
             // 
-            this.BtnRight.Location = new System.Drawing.Point(97, 17);
+            this.BtnRight.Location = new System.Drawing.Point(98, 17);
             this.BtnRight.Name = "BtnRight";
             this.BtnRight.Size = new System.Drawing.Size(46, 23);
             this.BtnRight.TabIndex = 14;
@@ -183,7 +186,7 @@
             // 
             // BtnCenter
             // 
-            this.BtnCenter.Location = new System.Drawing.Point(50, 17);
+            this.BtnCenter.Location = new System.Drawing.Point(52, 17);
             this.BtnCenter.Name = "BtnCenter";
             this.BtnCenter.Size = new System.Drawing.Size(46, 23);
             this.BtnCenter.TabIndex = 17;
@@ -263,10 +266,11 @@
             // LabelName
             // 
             this.LabelName.AutoSize = true;
-            this.LabelName.Location = new System.Drawing.Point(158, 332);
+            this.LabelName.Location = new System.Drawing.Point(166, 332);
             this.LabelName.Name = "LabelName";
-            this.LabelName.Size = new System.Drawing.Size(0, 13);
+            this.LabelName.Size = new System.Drawing.Size(89, 13);
             this.LabelName.TabIndex = 33;
+            this.LabelName.Text = "Nothing Selected";
             // 
             // TBOutputPath
             // 
@@ -274,7 +278,7 @@
             this.TBOutputPath.Location = new System.Drawing.Point(253, 358);
             this.TBOutputPath.Name = "TBOutputPath";
             this.TBOutputPath.ReadOnly = true;
-            this.TBOutputPath.Size = new System.Drawing.Size(270, 20);
+            this.TBOutputPath.Size = new System.Drawing.Size(232, 20);
             this.TBOutputPath.TabIndex = 34;
             this.TBOutputPath.Text = "Select Folder";
             // 
@@ -387,6 +391,43 @@
             this.GBFont.TabStop = false;
             this.GBFont.Text = "Font";
             // 
+            // CBFonts
+            // 
+            this.CBFonts.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.CBFonts.Location = new System.Drawing.Point(6, 16);
+            this.CBFonts.Name = "CBFonts";
+            this.CBFonts.Size = new System.Drawing.Size(138, 21);
+            this.CBFonts.TabIndex = 28;
+            this.CBFonts.SelectedValueChanged += new System.EventHandler(this.CBFonts_SelectedValueChanged);
+            // 
+            // BtnFontColor
+            // 
+            this.BtnFontColor.BackColor = System.Drawing.Color.White;
+            this.BtnFontColor.Location = new System.Drawing.Point(38, 43);
+            this.BtnFontColor.Name = "BtnFontColor";
+            this.BtnFontColor.Size = new System.Drawing.Size(20, 20);
+            this.BtnFontColor.TabIndex = 36;
+            this.BtnFontColor.UseVisualStyleBackColor = false;
+            this.BtnFontColor.Click += new System.EventHandler(this.BtnFontColor_Click);
+            // 
+            // LabelFontColor
+            // 
+            this.LabelFontColor.AutoSize = true;
+            this.LabelFontColor.Location = new System.Drawing.Point(6, 46);
+            this.LabelFontColor.Name = "LabelFontColor";
+            this.LabelFontColor.Size = new System.Drawing.Size(31, 13);
+            this.LabelFontColor.TabIndex = 37;
+            this.LabelFontColor.Text = "Color";
+            // 
+            // LabelFontSize
+            // 
+            this.LabelFontSize.AutoSize = true;
+            this.LabelFontSize.Location = new System.Drawing.Point(67, 46);
+            this.LabelFontSize.Name = "LabelFontSize";
+            this.LabelFontSize.Size = new System.Drawing.Size(27, 13);
+            this.LabelFontSize.TabIndex = 38;
+            this.LabelFontSize.Text = "Size";
+            // 
             // NumericUDFontSize
             // 
             this.NumericUDFontSize.Increment = new decimal(new int[] {
@@ -400,6 +441,11 @@
             0,
             0,
             0});
+            this.NumericUDFontSize.Minimum = new decimal(new int[] {
+            8,
+            0,
+            0,
+            0});
             this.NumericUDFontSize.Name = "NumericUDFontSize";
             this.NumericUDFontSize.Size = new System.Drawing.Size(50, 20);
             this.NumericUDFontSize.TabIndex = 5;
@@ -410,43 +456,6 @@
             0,
             0});
             this.NumericUDFontSize.ValueChanged += new System.EventHandler(this.NumericUDFontSize_ValueChanged);
-            // 
-            // LabelFontSize
-            // 
-            this.LabelFontSize.AutoSize = true;
-            this.LabelFontSize.Location = new System.Drawing.Point(67, 46);
-            this.LabelFontSize.Name = "LabelFontSize";
-            this.LabelFontSize.Size = new System.Drawing.Size(27, 13);
-            this.LabelFontSize.TabIndex = 38;
-            this.LabelFontSize.Text = "Size";
-            // 
-            // LabelFontColor
-            // 
-            this.LabelFontColor.AutoSize = true;
-            this.LabelFontColor.Location = new System.Drawing.Point(6, 46);
-            this.LabelFontColor.Name = "LabelFontColor";
-            this.LabelFontColor.Size = new System.Drawing.Size(31, 13);
-            this.LabelFontColor.TabIndex = 37;
-            this.LabelFontColor.Text = "Color";
-            // 
-            // BtnFontColor
-            // 
-            this.BtnFontColor.BackColor = System.Drawing.Color.White;
-            this.BtnFontColor.Location = new System.Drawing.Point(38, 43);
-            this.BtnFontColor.Name = "BtnFontColor";
-            this.BtnFontColor.Size = new System.Drawing.Size(20, 20);
-            this.BtnFontColor.TabIndex = 36;
-            this.BtnFontColor.UseVisualStyleBackColor = false;
-            this.BtnFontColor.Click += new System.EventHandler(this.BtnFontColor_Click);
-            // 
-            // CBFonts
-            // 
-            this.CBFonts.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.CBFonts.Location = new System.Drawing.Point(6, 16);
-            this.CBFonts.Name = "CBFonts";
-            this.CBFonts.Size = new System.Drawing.Size(138, 21);
-            this.CBFonts.TabIndex = 28;
-            this.CBFonts.SelectedValueChanged += new System.EventHandler(this.CBFonts_SelectedValueChanged);
             // 
             // NumericUDIncrement
             // 
@@ -486,11 +495,25 @@
             this.GBLastThumbnails.TabStop = false;
             this.GBLastThumbnails.Text = "Recently Used";
             // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
+            // 
+            // TBEnding
+            // 
+            this.TBEnding.Location = new System.Drawing.Point(487, 358);
+            this.TBEnding.Name = "TBEnding";
+            this.TBEnding.Size = new System.Drawing.Size(37, 20);
+            this.TBEnding.TabIndex = 46;
+            this.TBEnding.Text = ".png";
+            // 
             // MainControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(566, 390);
+            this.Controls.Add(this.TBEnding);
             this.Controls.Add(this.GBLastThumbnails);
             this.Controls.Add(this.LabelNumber);
             this.Controls.Add(this.NumericUDIncrement);
@@ -571,6 +594,8 @@
         private System.Windows.Forms.NumericUpDown NumericUDIncrement;
         private System.Windows.Forms.Label LabelNumber;
         private System.Windows.Forms.GroupBox GBLastThumbnails;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.TextBox TBEnding;
     }
 }
 

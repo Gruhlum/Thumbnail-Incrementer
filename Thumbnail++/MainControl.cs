@@ -45,9 +45,13 @@ namespace Thumbnail__
         private void LoadConfig()
         {
             string[] values = DataHelper.LoadData("Config");
-            if (values != null && values.Count() != 0)
+            if (values != null && values.Count() >= 1)
             {
                 DataHelper.ImageFolder = values[0];
+                if (values.Count() >= 2)
+                {
+                    TBEnding.Text = values[1];
+                }                
             }           
         }
         private void LoadThumbnails()
@@ -93,7 +97,6 @@ namespace Thumbnail__
             {
                 thumb.image.Dispose();
             }
-
             thumb.image = thumb.defaultImage.Clone() as Image;
             Graphics g = Graphics.FromImage(thumb.image);
             g.TextRenderingHint = TextRenderingHint.AntiAlias;
@@ -105,8 +108,7 @@ namespace Thumbnail__
             if (thumb.BorderSize > 0)
             {
                 g.DrawPath(new Pen(thumb.BorderColor, thumb.BorderSize), outlinePath);
-            }
-            
+            }          
             outlinePath.Dispose();
             g.Dispose();
             return thumb.image;
@@ -162,8 +164,9 @@ namespace Thumbnail__
             {
                 item.Save();
             }
-            string[] config = new string[1];
+            string[] config = new string[2];
             config[0] = DataHelper.ImageFolder;
+            config[1] = TBEnding.Text;
             DataHelper.SaveData(config, "Config");
         }
 
@@ -187,8 +190,10 @@ namespace Thumbnail__
                     DisplaySavedThumbnails();
                     return;
                 }
-                Thumbnail thumbnail = new Thumbnail(op.FileName);
-                thumbnail.name = DataHelper.GetFileName(op.FileName);               
+                Thumbnail thumbnail = new Thumbnail(op.FileName)
+                {
+                    name = DataHelper.GetFileName(op.FileName)
+                };
                 DisplaySelectedThumbnail(thumbnail);
                 savedThumbnails.Add(thumbnail);
                 DisplaySavedThumbnails();
@@ -199,44 +204,48 @@ namespace Thumbnail__
         {
             if (selectedThumbnail.anchor == AnchorStyles.Right)
             {
+                selectedThumbnail.anchor = AnchorStyles.Left;
                 NumericUDPositionX.Value -= (decimal)(GetTextSize(NumericUDIncrement.Value.ToString(), selectedThumbnail.Font).Width * Thumbnail.ALIGN_MULTI);
             }
             else if (selectedThumbnail.anchor == AnchorStyles.None)
             {
+                selectedThumbnail.anchor = AnchorStyles.Left;
                 NumericUDPositionX.Value -= (decimal)(GetTextSize(NumericUDIncrement.Value.ToString(), selectedThumbnail.Font).Width / 2 * Thumbnail.ALIGN_MULTI);
-            }
-            selectedThumbnail.anchor = AnchorStyles.Left;
+            }          
         }     
         private void BtnCenter_Click(object sender, EventArgs e)
         {
             if (selectedThumbnail.anchor == AnchorStyles.Right)
             {
+                selectedThumbnail.anchor = AnchorStyles.None;
                 NumericUDPositionX.Value -= (decimal)(GetTextSize(NumericUDIncrement.Value.ToString(), selectedThumbnail.Font).Width / 2 * Thumbnail.ALIGN_MULTI);
             }
             else if (selectedThumbnail.anchor == AnchorStyles.Left)
             {
+                selectedThumbnail.anchor = AnchorStyles.None;
                 NumericUDPositionX.Value += (decimal)(GetTextSize(NumericUDIncrement.Value.ToString(), selectedThumbnail.Font).Width / 2 * Thumbnail.ALIGN_MULTI);
-            }
-            selectedThumbnail.anchor = AnchorStyles.None;
+            }            
             PBSelect.Image = BuildImage(selectedThumbnail);
         }
         private void BtnRight_Click(object sender, EventArgs e)
         {            
             if (selectedThumbnail.anchor == AnchorStyles.Left)
             {
+                selectedThumbnail.anchor = AnchorStyles.Right;
                 NumericUDPositionX.Value += (decimal)(GetTextSize(NumericUDIncrement.Value.ToString(), selectedThumbnail.Font).Width * Thumbnail.ALIGN_MULTI);
             }
             else if (selectedThumbnail.anchor == AnchorStyles.None)
             {
+                selectedThumbnail.anchor = AnchorStyles.Right;
                 NumericUDPositionX.Value += (decimal)(GetTextSize(NumericUDIncrement.Value.ToString(), selectedThumbnail.Font).Width / 2 * Thumbnail.ALIGN_MULTI);
             }
-            selectedThumbnail.anchor = AnchorStyles.Right;
+            
             PBSelect.Image = BuildImage(selectedThumbnail);
         }
 
         private void BtnSave_Click(object sender, EventArgs e)
         {           
-            DataHelper.SaveImage(selectedThumbnail.image, selectedThumbnail.name + selectedThumbnail.increment);
+            DataHelper.SaveImage(selectedThumbnail.image, selectedThumbnail.name + "_" + selectedThumbnail.increment, TBEnding.Text);
             NumericUDIncrement.Value++;
         }      
         private void BtnChangeOutput_Click(object sender, EventArgs e)
@@ -318,6 +327,6 @@ namespace Thumbnail__
             }
             selectedThumbnail.FontName = CBFonts.Text;
             PBSelect.Image = BuildImage(selectedThumbnail);
-        }            
+        }
     }
 }

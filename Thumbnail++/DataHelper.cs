@@ -42,13 +42,13 @@ namespace Thumbnail__
             return Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + mainFolder);
             
         }
-        public static void SaveImage(Image image, string name)
+        public static void SaveImage(Image image, string name, string ending)
         {
             if (!Directory.Exists(ImageFolder))
             {
                 Directory.CreateDirectory(ImageFolder);
             }
-            image.Save(ImageFolder + @"\" + name + ".png");
+            image.Save(ImageFolder + @"\" + name + ending);
         }
 
         public static void SaveData(string[] values, string name, string folder = mainFolder)
