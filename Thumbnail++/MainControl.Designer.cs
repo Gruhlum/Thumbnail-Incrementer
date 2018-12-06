@@ -89,7 +89,7 @@
             // 
             this.BtnSelect.Location = new System.Drawing.Point(10, 113);
             this.BtnSelect.Name = "BtnSelect";
-            this.BtnSelect.Size = new System.Drawing.Size(144, 23);
+            this.BtnSelect.Size = new System.Drawing.Size(150, 23);
             this.BtnSelect.TabIndex = 1;
             this.BtnSelect.Text = "Select Image";
             this.BtnSelect.UseVisualStyleBackColor = true;
@@ -530,6 +530,7 @@
             this.Controls.Add(this.BtnCreate);
             this.Controls.Add(this.BtnSelect);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "MainControl";
             this.ShowIcon = false;
             this.Text = "Thumbnail++";

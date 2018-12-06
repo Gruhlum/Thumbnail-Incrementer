@@ -330,6 +330,10 @@ namespace Thumbnail__
 
         private void LabelName_DoubleClick(object sender, EventArgs e)
         {
+            if (selectedThumbnail == null)
+            {
+                return;
+            }
             OpenFileDialog op = new OpenFileDialog
             {
                 Title = "Select a picture",
