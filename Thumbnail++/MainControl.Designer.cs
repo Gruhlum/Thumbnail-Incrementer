@@ -328,11 +328,6 @@
             // NumericUDBorderSize
             // 
             this.NumericUDBorderSize.Location = new System.Drawing.Point(94, 19);
-            this.NumericUDBorderSize.Maximum = new decimal(new int[] {
-            999,
-            0,
-            0,
-            0});
             this.NumericUDBorderSize.Name = "NumericUDBorderSize";
             this.NumericUDBorderSize.Size = new System.Drawing.Size(50, 20);
             this.NumericUDBorderSize.TabIndex = 39;
@@ -345,6 +340,7 @@
             this.GBBorder.Controls.Add(this.LabelBorderSize);
             this.GBBorder.Controls.Add(this.NumericUDBorderSize);
             this.GBBorder.Controls.Add(this.BtnBorderColor);
+            this.GBBorder.Enabled = false;
             this.GBBorder.Location = new System.Drawing.Point(10, 310);
             this.GBBorder.Name = "GBBorder";
             this.GBBorder.Size = new System.Drawing.Size(150, 44);
@@ -358,6 +354,7 @@
             this.GBPosition.Controls.Add(this.NumericUDPositionX);
             this.GBPosition.Controls.Add(this.LabelXPos);
             this.GBPosition.Controls.Add(this.LabelYPosition);
+            this.GBPosition.Enabled = false;
             this.GBPosition.Location = new System.Drawing.Point(10, 214);
             this.GBPosition.Name = "GBPosition";
             this.GBPosition.Size = new System.Drawing.Size(150, 44);
@@ -370,6 +367,7 @@
             this.GBAlignment.Controls.Add(this.BtnCenter);
             this.GBAlignment.Controls.Add(this.BtnRight);
             this.GBAlignment.Controls.Add(this.BtnLeft);
+            this.GBAlignment.Enabled = false;
             this.GBAlignment.Location = new System.Drawing.Point(10, 262);
             this.GBAlignment.Name = "GBAlignment";
             this.GBAlignment.Size = new System.Drawing.Size(150, 44);
@@ -384,6 +382,7 @@
             this.GBFont.Controls.Add(this.LabelFontColor);
             this.GBFont.Controls.Add(this.LabelFontSize);
             this.GBFont.Controls.Add(this.NumericUDFontSize);
+            this.GBFont.Enabled = false;
             this.GBFont.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.GBFont.Location = new System.Drawing.Point(10, 141);
             this.GBFont.Name = "GBFont";
@@ -460,6 +459,7 @@
             // 
             // NumericUDIncrement
             // 
+            this.NumericUDIncrement.Enabled = false;
             this.NumericUDIncrement.Location = new System.Drawing.Point(104, 359);
             this.NumericUDIncrement.Maximum = new decimal(new int[] {
             99999,
@@ -508,6 +508,7 @@
             this.TBEnding.Size = new System.Drawing.Size(37, 20);
             this.TBEnding.TabIndex = 46;
             this.TBEnding.Text = ".png";
+            this.TBEnding.TextChanged += new System.EventHandler(this.TBEnding_TextChanged);
             // 
             // MainControl
             // 

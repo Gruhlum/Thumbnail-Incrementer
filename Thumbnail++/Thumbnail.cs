@@ -20,7 +20,7 @@ namespace Thumbnail__
         public string imagePath;
         public AnchorStyles anchor = AnchorStyles.Left;
         public int increment = 1;
-        public int xPos = 0;
+        public int xPos = 50;
         public int yPos = 0;
 
         public PointF Position
